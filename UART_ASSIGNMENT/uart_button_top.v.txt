@@ -1,0 +1,123 @@
+
+VERILOG CODE
+
+
+
+
+
+`timescale 1ns / 1ps
+
+module uart_button_top(
+
+    input clk,
+    input rst,
+
+    input [3:0] btn,
+
+    input uart_rx_pin,
+    output uart_tx_pin,
+
+    output reg [3:0] led
+
+);
+
+// UART RX Signals
+wire [7:0] rx_data;
+wire rx_done;
+
+// UART TX Signals
+reg [7:0] tx_data;
+reg tx_start;
+wire tx_busy;
+
+//---------------- UART Receiver ----------------//
+uart_rx RX (
+    .clk(clk),
+    .rst(rst),
+    .rx(uart_rx_pin),
+    .rx_data(rx_data),
+    .rx_done(rx_done)
+);
+
+//---------------- UART Transmitter ----------------//
+uart_tx TX (
+    .clk(clk),
+    .rst(rst),
+    .tx_start(tx_start),
+    .tx_data(tx_data),
+    .tx(uart_tx_pin),
+    .tx_busy(tx_busy)
+);
+
+//---------------- Main Logic ----------------//
+always @(posedge clk or posedge rst)
+begin
+
+    if(rst)
+    begin
+        tx_data  <= 8'd0;
+        tx_start <= 1'b0;
+        led      <= 4'b0000;
+    end
+    else
+    begin
+
+        // Default
+        tx_start <= 1'b0;
+
+        //--------------------------
+        // Send Name using Buttons
+        //--------------------------
+        if(!tx_busy)
+        begin
+
+            if(btn[0])
+            begin
+                tx_data  <= "J";
+                tx_start <= 1'b1;
+            end
+
+            else if(btn[1])
+            begin
+                tx_data  <= "O";
+                tx_start <= 1'b1;
+            end
+
+            else if(btn[2])
+            begin
+                tx_data  <= "H";
+                tx_start <= 1'b1;
+            end
+
+            else if(btn[3])
+            begin
+                tx_data  <= "N";
+                tx_start <= 1'b1;
+            end
+
+        end
+
+        //--------------------------
+        // PC Controls LEDs
+        //--------------------------
+        if(rx_done)
+        begin
+
+            case(rx_data)
+
+                "1": led <= 4'b0001;
+                "2": led <= 4'b0010;
+                "3": led <= 4'b0100;
+                "4": led <= 4'b1000;
+
+                default: led <= 4'b0000;
+
+            endcase
+
+        end
+
+    end
+
+end
+
+endmodule

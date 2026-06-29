@@ -1,0 +1,103 @@
+TEST BENCH CODE
+
+
+
+
+`timescale 1ns / 1ps
+
+module uart_tx_tb;
+
+reg clk;
+reg rst;
+reg tx_start;
+reg [7:0] tx_data;
+
+wire tx;
+wire tx_busy;
+
+// Instantiate UART TX
+uart_tx uut (
+    .clk(clk),
+    .rst(rst),
+    .tx_start(tx_start),
+    .tx_data(tx_data),
+    .tx(tx),
+    .tx_busy(tx_busy)
+);
+
+// Clock Generation (24 MHz Approximation)
+initial
+begin
+    clk = 0;
+    forever #20 clk = ~clk;
+end
+
+// Test Stimulus
+initial
+begin
+    rst = 1;
+    tx_start = 0;
+    tx_data = 8'h00;
+
+    #100;
+    rst = 0;
+
+    // Send Character 'S'
+    #100;
+    tx_data = "S";
+    tx_start = 1;
+    #40;
+    tx_start = 0;
+
+    wait(tx_busy == 0);
+
+    // Send Character 'A'
+    #10000;
+    tx_data = "A";
+    tx_start = 1;
+    #40;
+    tx_start = 0;
+
+    wait(tx_busy == 0);
+
+    // Send Character 'R'
+    #10000;
+    tx_data = "R";
+    tx_start = 1;
+    #40;
+    tx_start = 0;
+
+    wait(tx_busy == 0);
+
+    // Send Character 'A'
+    #10000;
+    tx_data = "A";
+    tx_start = 1;
+    #40;
+    tx_start = 0;
+
+    wait(tx_busy == 0);
+
+    // Send Character 'H'
+    #10000;
+    tx_data = "H";
+    tx_start = 1;
+    #40;
+    tx_start = 0;
+
+    wait(tx_busy == 0);
+
+    #10000;
+    $finish;
+end
+
+// Monitor
+initial
+begin
+    $monitor("Time=%0t rst=%b tx_start=%b tx_data=%h tx=%b tx_busy=%b",
+             $time, rst, tx_start, tx_data, tx, tx_busy);
+end
+
+endmodule
+
+
