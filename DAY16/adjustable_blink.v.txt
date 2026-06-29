@@ -1,0 +1,46 @@
+2. Adjustable Blink Speed via Button
+BTN1 increases blink speed, BTN2 decreases.
+Speeds: 8Hz → 4Hz → 2Hz → 1Hz → 0.5Hz
+Concept: Store speed in a register, select divider value from a lookup.
+
+
+Verilog code
+
+
+`timescale 1ns / 1ps
+
+module adjustable_blink(
+    input clk,
+    input btn_up,
+    input btn_down,
+    output reg led
+);
+
+reg [2:0] speed = 3'd2;      // Default = 2 Hz
+reg [31:0] counter = 0;
+
+// Button control
+always @(posedge clk)
+begin
+    if(btn_up && speed < 4)
+        speed <= speed + 1;
+    else if(btn_down && speed > 0)
+        speed <= speed - 1;
+end
+
+// LED Blinking
+always @(posedge clk)
+begin
+    counter <= counter + 1;
+
+    case(speed)
+        3'd0: led <= counter[26];   // 0.5 Hz
+        3'd1: led <= counter[25];   // 1 Hz
+        3'd2: led <= counter[24];   // 2 Hz
+        3'd3: led <= counter[23];   // 4 Hz
+        3'd4: led <= counter[22];   // 8 Hz
+        default: led <= counter[24];
+    endcase
+end
+
+endmodule

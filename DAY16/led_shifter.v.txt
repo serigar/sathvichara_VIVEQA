@@ -1,0 +1,50 @@
+3. Left / Right Shifter
+Shift one 1 bit towards left or right via the LEDs based on Push Button Input
+
+
+`timescale 1ns / 1ps
+
+module led_shifter(
+    input clk,
+    input btn_left,
+    input btn_right,
+    output reg [7:0] led
+);
+
+reg [25:0] counter;
+
+// Initialize LED pattern
+initial
+begin
+    led = 8'b00000001;
+    counter = 0;
+end
+
+always @(posedge clk)
+begin
+    counter <= counter + 1;
+
+    // Slow down shifting
+    if(counter == 26'd50000000)
+    begin
+        counter <= 0;
+
+        if(btn_left)
+        begin
+            if(led == 8'b10000000)
+                led <= 8'b00000001;
+            else
+                led <= led << 1;
+        end
+
+        else if(btn_right)
+        begin
+            if(led == 8'b00000001)
+                led <= 8'b10000000;
+            else
+                led <= led >> 1;
+        end
+    end
+end
+
+endmodule

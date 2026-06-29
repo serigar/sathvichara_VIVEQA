@@ -1,0 +1,19 @@
+Constraints
+
+
+## Clock
+set_property PACKAGE_PIN W5 [get_ports clk]
+set_property IOSTANDARD LVCMOS33 [get_ports clk]
+create_clock -period 10.000 [get_ports clk]
+
+## LED0
+set_property PACKAGE_PIN U16 [get_ports led]
+set_property IOSTANDARD LVCMOS33 [get_ports led]
+
+## BTN1 (Increase Speed)
+set_property PACKAGE_PIN U18 [get_ports btn_up]
+set_property IOSTANDARD LVCMOS33 [get_ports btn_up]
+
+## BTN2 (Decrease Speed)
+set_property PACKAGE_PIN T18 [get_ports btn_down]
+set_property IOSTANDARD LVCMOS33 [get_ports btn_down]

@@ -1,0 +1,25 @@
+1. Multi-frequency LED Blinker Different LEDs blink at different frequencies simultaneously. 
+L1 → 1Hz L2 → 2Hz L3 → 4Hz L4 → 8Hz Concept: 
+Single counter, compare at different thresholds for each LED.
+
+`timescale 1ns / 1ps
+
+module multi_led_blinker(
+    input clk,              // 100 MHz Clock
+    output reg [3:0] led
+);
+
+reg [31:0] counter = 0;
+
+always @(posedge clk)
+begin
+    counter <= counter + 1;
+
+    // Different frequencies
+    led[0] <= counter[25];   // ~1 Hz
+    led[1] <= counter[24];   // ~2 Hz
+    led[2] <= counter[23];   // ~4 Hz
+    led[3] <= counter[22];   // ~8 Hz
+end
+
+endmodule
